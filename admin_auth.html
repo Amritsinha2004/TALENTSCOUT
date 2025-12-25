@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Command | Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- 1. PROFESSIONAL LIGHT THEME --- */
+        :root {
+            --bg-grey: #e3e6ec;       /* Light Professional Grey */
+            --bg-card: #ffffff;       /* Pure White for Cards */
+            
+            --cherry-red: #D2042D;    /* Accent 1 */
+            --navy-blue: #000080;     /* Accent 2 */
+            
+            --text-main: #2c3e50;     /* Dark Grey */
+            --text-muted: #636e72;    /* Soft Grey */
+            --border-light: #dce0e4;
+            
+            --shadow-card: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; outline: none; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-grey);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        /* --- 2. AUTH CARD --- */
+        .auth-container {
+            background: var(--bg-card);
+            width: 100%; max-width: 420px;
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid white;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            border-top: 5px solid var(--cherry-red);
+        }
+
+        .brand {
+            font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 0.5rem;
+            letter-spacing: 1px; color: var(--navy-blue); text-transform: uppercase;
+        }
+        .brand span { color: var(--cherry-red); }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 1rem; margin-bottom: 2.5rem; font-weight: 500; }
+
+        /* --- 3. TABS --- */
+        .tabs { display: flex; margin-bottom: 2rem; background: #f8f9fa; border-radius: 30px; padding: 5px; border: 1px solid var(--border-light); }
+        .tab { 
+            flex: 1; text-align: center; padding: 10px; cursor: pointer; 
+            color: var(--text-muted); font-weight: 600; transition: 0.3s; border-radius: 25px;
+        }
+        .tab:hover { color: var(--navy-blue); }
+        .tab.active { 
+            background: white;
+            color: var(--cherry-red); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* --- 4. FORMS --- */
+        .form-box { display: none; animation: fadeIn 0.4s ease; }
+        .form-box.active { display: block; }
+
+        label { display: block; font-size: 0.9rem; color: var(--navy-blue); margin-bottom: 8px; margin-top: 15px; font-weight: 600; }
+        
+        input {
+            width: 100%; padding: 12px;
+            background: #f8f9fa; border: 1px solid #ced4da;
+            color: var(--text-main); border-radius: 8px;
+            font-size: 1rem; transition: 0.3s;
+        }
+        input:focus { 
+            border-color: var(--cherry-red); 
+            background: white;
+            box-shadow: 0 0 0 3px rgba(210, 4, 45, 0.1); 
+        }
+        input::placeholder { color: #adb5bd; }
+
+        /* --- 5. BUTTONS --- */
+        .btn-auth {
+            width: 100%; padding: 12px; margin-top: 25px;
+            background: var(--cherry-red); color: white;
+            border: none; border-radius: 30px;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(210, 4, 45, 0.3);
+        }
+        .btn-auth:hover {
+            background: #a00323;
+            box-shadow: 0 10px 20px rgba(210, 4, 45, 0.4);
+            transform: translateY(-2px);
+        }
+        .btn-auth:disabled { background: #ccc; color: #666; cursor: not-allowed; box-shadow: none; transform: none;}
+
+        /* --- 6. ALERTS --- */
+        .alert { 
+            margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 0.9rem; text-align: center; display: none; font-weight: 600;
+        }
+        .alert-error { background: #ffe5e5; color: #d32f2f; border: 1px solid #ffcdd2; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        
+        .back-link {
+            display: block; text-align: center; margin-top: 1.5rem; 
+            color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.3s; font-weight: 600;
+        }
+        .back-link:hover { color: var(--cherry-red); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="brand">TALENT<span>SCOUT</span></div>
+        <div class="subtitle">SECURE ADMIN GATEWAY</div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">LOGIN</div>
+            <div class="tab" onclick="switchTab('signup')">REGISTER</div>
+        </div>
+
+        <div id="login-box" class="form-box active">
+            <label>ADMIN ID</label>
+            <input type="text" id="l_user" placeholder="Enter username...">
+            
+            <label>ACCESS KEY</label>
+            <input type="password" id="l_pass" placeholder="••••••••">
+
+            <button class="btn-auth" onclick="login()" id="loginBtn">INITIALIZE SESSION</button>
+        </div>
+
+        <div id="signup-box" class="form-box">
+            <label>FULL NAME</label>
+            <input type="text" id="s_name" placeholder="Agent Name">
+
+            <label>CREATE ID</label>
+            <input type="text" id="s_user" placeholder="New username">
+
+            <label>CREATE KEY</label>
+            <input type="password" id="s_pass" placeholder="Strong password">
+
+            <button class="btn-auth" style="background: var(--navy-blue); box-shadow: 0 5px 15px rgba(0, 0, 128, 0.3);" onclick="signup()" id="signupBtn">CREATE PROFILE</button>
+        </div>
+
+        <div id="msg-area" class="alert"></div>
+        <a href="index.html" class="back-link">← Return to Gateway</a>
+    </div>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8080";
+
+        function switchTab(mode) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form-box').forEach(f => f.classList.remove('active'));
+            document.getElementById('msg-area').style.display = 'none';
+
+            if(mode === 'login') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('login-box').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('signup-box').classList.add('active');
+            }
+        }
+
+        function showMsg(text, type) {
+            const el = document.getElementById('msg-area');
+            el.className = `alert alert-${type}`;
+            el.innerText = text;
+            el.style.display = 'block';
+        }
+
+        async function login() {
+            const btn = document.getElementById('loginBtn');
+            const user = document.getElementById('l_user').value;
+            const pass = document.getElementById('l_pass').value;
+
+            if(!user || !pass) return showMsg("Credentials Missing", "error");
+
+            btn.disabled = true;
+            btn.innerText = "AUTHENTICATING...";
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: user, password: pass})
+                });
+                
+                const data = await res.json();
+                if(!res.ok) throw new Error(data.detail || "Access Denied");
+
+                // --- 2FA LOGIC START ---
+                if(data.message === "OTP_REQUIRED") {
+                    localStorage.setItem("temp_user", data.username);
+                    showMsg("CREDENTIALS VALID. 2FA REQUIRED...", "success");
+                    
+                    setTimeout(() => {
+                        window.location.href = "admin_otp.html";
+                    }, 1000);
+                    return;
+                }
+                // --- 2FA LOGIC END ---
+
+                // Fallback
+                if(data.role !== 'admin') throw new Error("Unauthorized Role");
+                localStorage.setItem("ts_token", data.access_token);
+                window.location.href = "admin.html";
+
+            } catch(e) {
+                showMsg(e.message, "error");
+                btn.disabled = false;
+                btn.innerText = "INITIALIZE SESSION";
+            }
+        }
+
+        async function signup() {
+            const btn = document.getElementById('signupBtn');
+            const name = document.getElementById('s_name').value;
+            const user = document.getElementById('s_user').value;
+            const pass = document.getElementById('s_pass').value;
+
+            if(!name || !user || !pass) return showMsg("Fill all fields", "error");
+
+            btn.disabled = true;
+            btn.innerText = "PROCESSING...";
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/signup`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: user, password: pass, full_name: name, role: 'admin'})
+                });
+
+                const data = await res.json();
+                if(!res.ok) throw new Error(data.detail || "Registration Failed");
+
+                showMsg("PROFILE CREATED. PLEASE LOGIN.", "success");
+                setTimeout(() => switchTab('login'), 1500);
+
+            } catch(e) {
+                showMsg(e.message, "error");
+                btn.disabled = false;
+                btn.innerText = "CREATE PROFILE";
+            }
+        }
+    </script>
+</body>
+</html>

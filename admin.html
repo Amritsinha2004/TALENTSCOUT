@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentScout | Recruiter Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- 1. PROFESSIONAL LIGHT THEME --- */
+        :root {
+            --bg-grey: #e3e6ec;       
+            --bg-card: #ffffff;       
+            
+            --cherry-red: #D2042D;    /* Accent 1 */
+            --navy-blue: #000080;     /* Accent 2 */
+            
+            --text-main: #2c3e50;     /* Dark Grey */
+            --text-muted: #636e72;    /* Soft Grey */
+            --border-light: #dce0e4;
+            
+            --shadow-card: 0 10px 30px rgba(0,0,0,0.08);
+            --shadow-hover: 0 15px 35px rgba(0,0,0,0.12);
+        }
+
+        * { box-sizing: border-box; outline: none; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-grey);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        /* --- 2. HEADER --- */
+        header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .brand { 
+            font-size: 1.5rem; font-weight: 800; color: var(--navy-blue); 
+            text-decoration: none; letter-spacing: 1px; text-transform: uppercase;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .brand span { color: var(--cherry-red); }
+        
+        .user-tag { 
+            background: white;
+            border: 1px solid var(--cherry-red);
+            padding: 8px 20px; border-radius: 30px; font-size: 0.8rem; font-weight: 700;
+            color: var(--cherry-red); 
+            cursor: pointer; transition: 0.3s;
+        }
+        .user-tag:hover { background: var(--cherry-red); color: white; }
+
+        /* --- 3. MAIN CONTAINER --- */
+        main {
+            max-width: 1200px; width: 100%; margin: 2rem auto; padding: 0 20px;
+        }
+
+        /* --- 4. SEARCH BAR --- */
+        .search-container {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid white;
+            box-shadow: var(--shadow-card);
+            display: flex; gap: 15px;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+
+        input {
+            flex: 1;
+            background: #f8f9fa;
+            border: 1px solid var(--border-light);
+            color: var(--text-main);
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        input:focus {
+            border-color: var(--navy-blue);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.1);
+        }
+        input::placeholder { color: #adb5bd; }
+
+        /* MIC BUTTON */
+        .mic-btn {
+            background: transparent; border: 1px solid var(--border-light);
+            color: var(--text-muted); width: 50px; height: 50px; border-radius: 50%;
+            cursor: pointer; font-size: 1.2rem; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mic-btn:hover { background: var(--navy-blue); color: white; border-color: var(--navy-blue); }
+
+        button.search-btn {
+            background: var(--cherry-red);
+            color: white;
+            border: none;
+            padding: 0 2rem;
+            height: 50px;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button.search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(210, 4, 45, 0.3);
+            background: #a00323;
+        }
+
+        /* --- 5. RESULTS --- */
+        #results-area {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid transparent;
+            border-top: 5px solid var(--navy-blue);
+            box-shadow: var(--shadow-card);
+            transition: transform 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: start;
+            margin-bottom: 1rem;
+        }
+        .card-title {
+            font-size: 1.1rem; font-weight: 700; color: var(--navy-blue);
+            margin: 0; word-break: break-all;
+        }
+        .match-badge {
+            font-size: 1.5rem; font-weight: 800; color: var(--cherry-red);
+        }
+
+        .snippet {
+            color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;
+            margin-bottom: 1.5rem;
+            background: #f8f9fa; padding: 12px; border-radius: 8px;
+            border-left: 3px solid #dce0e4;
+        }
+
+        .actions-row { display: flex; gap: 10px; }
+
+        .btn-view {
+            flex: 1;
+            text-align: center; text-decoration: none; padding: 10px 0;
+            border: 1px solid var(--navy-blue); color: var(--navy-blue);
+            border-radius: 8px; font-weight: 600; transition: all 0.3s; cursor: pointer;
+        }
+        .btn-view:hover { background: var(--navy-blue); color: white; }
+
+        .btn-chat {
+            flex: 1;
+            border: 1px solid var(--cherry-red); color: var(--cherry-red);
+            background: transparent; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn-chat:hover { background: var(--cherry-red); color: white; }
+
+        .status-msg { text-align: center; margin-bottom: 20px; color: var(--text-muted); font-weight: 600; }
+        .loader { border: 3px solid #e3e6ec; border-top: 3px solid var(--navy-blue); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- 6. CHAT MODAL --- */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1000;
+        }
+        .modal-content {
+            background: #ffffff; 
+            width: 90%; max-width: 500px; margin: 80px auto; padding: 0;
+            border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; height: 65vh;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            padding: 20px; background: var(--navy-blue); color: white;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h3 { margin: 0; font-size: 1.2rem; }
+        .close-btn { cursor: pointer; color: white; font-size: 1.5rem; opacity: 0.8; }
+        .close-btn:hover { opacity: 1; }
+
+        .chat-history {
+            flex: 1; overflow-y: auto; background: #f8f9fa; 
+            padding: 20px;
+        }
+        
+        .chat-input-row { 
+            display: flex; gap: 10px; padding: 15px; background: white; border-top: 1px solid #eee; 
+        }
+        
+        .chat-msg { 
+            margin-bottom: 15px; padding: 12px 16px; border-radius: 12px; line-height: 1.5; font-size: 0.95rem; max-width: 80%; 
+        }
+        .user-msg { 
+            background: var(--navy-blue); color: white; 
+            margin-left: auto; border-bottom-right-radius: 2px;
+        }
+        .ai-msg { 
+            background: white; color: var(--text-main); border: 1px solid #e3e6ec;
+            margin-right: auto; border-bottom-left-radius: 2px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #999; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="welcome.html" class="brand">TALENT<span>SCOUT</span></a>
+        <div class="user-tag" onclick="logout()">LOGOUT</div>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <input type="text" id="query" placeholder="Enter keywords (e.g. 'Java Developer with AWS')...">
+            <button class="mic-btn" onclick="startVoice()">🎙️</button>
+            <button class="search-btn" onclick="performSearch()">Search</button>
+        </div>
+
+        <div id="status-area"></div>
+        <div id="results-area"></div>
+    </main>
+
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="chatTitle">Neural Chat</h3>
+                    <div id="activeCandidateName" style="color:#aeb5d1; font-size:0.8rem; margin-top:2px;"></div>
+                </div>
+                <span class="close-btn" onclick="closeChat()">×</span>
+            </div>
+            
+            <div id="chatBox" class="chat-history"></div>
+            
+            <div class="chat-input-row">
+                <input type="text" id="chatInput" placeholder="Ask about this candidate..." onkeypress="if(event.key==='Enter') sendChat()">
+                <button onclick="sendChat()" style="background:var(--cherry-red); color:white; border:none; padding:0 20px; border-radius:8px; cursor:pointer; font-weight:bold;">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8080";
+        let currentFilename = "";
+
+        // Auth Check
+        if(!localStorage.getItem('ts_token')) {
+            window.location.href = 'admin_auth.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('ts_token');
+            window.location.href = 'welcome.html';
+        }
+
+        // --- 1. SEARCH LOGIC ---
+        document.getElementById('query').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        async function performSearch() {
+            const query = document.getElementById('query').value.trim();
+            const container = document.getElementById('results-area');
+            const statusArea = document.getElementById('status-area');
+
+            if (!query) return;
+
+            container.innerHTML = '';
+            statusArea.innerHTML = '<div class="status-msg"><div class="loader"></div> Scanning Neural Network...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/search?query=${encodeURIComponent(query)}`);
+                if (!response.ok) throw new Error("Server Error");
+
+                const data = await response.json();
+                
+                if (data.count === 0) {
+                    statusArea.innerHTML = '<div class="status-msg" style="color: #D2042D">0 Matches Found</div>';
+                    return;
+                }
+
+                statusArea.innerHTML = `<div class="status-msg" style="color: var(--navy-blue)">Found ${data.count} Candidates</div>`;
+
+                data.results.forEach(item => {
+                    const pdfUrl = `${API_BASE}/pdfs/${encodeURIComponent(item.source)}`;
+                    
+                    // Email Extraction
+                    const emailMatch = item.text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
+                    const candidateEmail = emailMatch ? emailMatch[0] : "";
+
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <h3 class="card-title">${item.source}</h3>
+                            <div class="match-badge">${item.score}%</div>
+                        </div>
+                        <div class="snippet">"...${item.text}..."</div>
+                        
+                        <div class="actions-row">
+                            <a href="${pdfUrl}" target="_blank" class="btn-view">📄 VIEW</a>
+                            
+                            <button onclick="openChat('${item.source}')" class="btn-chat">💬 CHAT</button>
+                            
+                            ${candidateEmail ? `
+                            <a href="mailto:${candidateEmail}?subject=Interview Request&body=Hi, we reviewed your profile on TalentScout and would like to connect." 
+                               class="btn-view" style="border-color:#ff9e00; color:#ff9e00; flex:0.8;">
+                               ✉️
+                            </a>` : ''}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error(error);
+                statusArea.innerHTML = '<div class="status-msg" style="color: #D2042D">System Offline. Check Backend Connection.</div>';
+            }
+        }
+
+        // --- 2. VOICE SEARCH LOGIC ---
+        function startVoice() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Voice search not supported. Please use Chrome.");
+                return;
+            }
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            const micBtn = document.querySelector('.mic-btn');
+            micBtn.style.background = "var(--navy-blue)";
+            micBtn.style.color = "white";
+
+            recognition.start();
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('query').value = transcript;
+                performSearch();
+                micBtn.style.background = "transparent";
+                micBtn.style.color = "var(--text-muted)";
+            };
+
+            recognition.onerror = () => {
+                micBtn.style.background = "transparent";
+                micBtn.style.color = "var(--text-muted)";
+            };
+            
+            recognition.onend = () => {
+                micBtn.style.background = "transparent";
+                micBtn.style.color = "var(--text-muted)";
+            };
+        }
+
+        // --- 3. CHAT LOGIC ---
+        function openChat(filename) {
+            currentFilename = filename;
+            document.getElementById('activeCandidateName').innerText = "Analyzing: " + filename;
+            document.getElementById('chatModal').style.display = 'block';
+            document.getElementById('chatBox').innerHTML = `<div class="ai-msg chat-msg">Hello! Ask me anything about ${filename}'s resume.</div>`;
+        }
+
+        function closeChat() {
+            document.getElementById('chatModal').style.display = 'none';
+        }
+
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const box = document.getElementById('chatBox');
+            const question = input.value.trim();
+            if (!question) return;
+
+            // User Message
+            box.innerHTML += `<div class="user-msg chat-msg">${question}</div>`;
+            input.value = "";
+            box.scrollTop = box.scrollHeight;
+
+            // Loading State
+            const loadingId = "loading-" + Date.now();
+            box.innerHTML += `<div id="${loadingId}" class="ai-msg chat-msg">Thinking...</div>`;
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                const res = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ filename: currentFilename, question: question })
+                });
+                
+                const data = await res.json();
+                
+                // Remove Loading
+                const loader = document.getElementById(loadingId);
+                if(loader) loader.remove();
+
+                // Check for valid answer
+                if (!res.ok || data.detail) {
+                    const errMsg = data.detail || "Error connecting to Resume Brain.";
+                    box.innerHTML += `<div class="ai-msg chat-msg" style="color:#D2042D; border-color:#D2042D">${errMsg}</div>`;
+                } else {
+                    box.innerHTML += `<div class="ai-msg chat-msg">${data.answer || "No response."}</div>`;
+                }
+                
+            } catch (e) {
+                const loader = document.getElementById(loadingId);
+                if(loader) loader.remove();
+                box.innerHTML += `<div class="ai-msg chat-msg" style="color:#D2042D">System Error: Check Backend Console.</div>`;
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>

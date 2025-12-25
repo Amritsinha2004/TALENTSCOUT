@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentScout | Candidate Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- 1. PROFESSIONAL LIGHT THEME --- */
+        :root {
+            --bg-grey: #e3e6ec;       
+            --bg-card: #ffffff;       
+            
+            --cherry-red: #D2042D;    /* Accent 1 */
+            --navy-blue: #000080;     /* Accent 2 */
+            
+            --text-main: #2c3e50;     
+            --text-muted: #636e72;    
+            --border-light: #dce0e4;
+            
+            --shadow-card: 0 10px 30px rgba(0,0,0,0.08);
+            --shadow-hover: 0 15px 35px rgba(0,0,0,0.12);
+        }
+
+        * { box-sizing: border-box; outline: none; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-grey);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        /* --- 2. HEADER --- */
+        header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .brand { font-size: 1.4rem; font-weight: 800; color: var(--navy-blue); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; }
+        .brand span { color: var(--cherry-red); }
+        
+        .nav-link {
+            color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s;
+            border: 1px solid var(--border-light); padding: 8px 20px; border-radius: 30px;
+        }
+        .nav-link:hover { 
+            color: var(--cherry-red); 
+            border-color: var(--cherry-red); 
+            background: #fff5f5;
+        }
+
+        /* --- 3. MAIN LAYOUT --- */
+        main {
+            flex: 1; max-width: 1000px; width: 100%; margin: 3rem auto; padding: 0 1rem;
+        }
+
+        h1 { text-align: center; color: var(--navy-blue); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
+        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 3rem; font-weight: 500; }
+
+        /* --- 4. SELECTION GRID --- */
+        .action-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; transition: opacity 0.3s ease;
+        }
+
+        .action-card {
+            background: var(--bg-card);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            border: 1px solid transparent; 
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s ease;
+            text-align: center; cursor: pointer;
+            position: relative; overflow: hidden;
+            border-top: 5px solid transparent;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-icon { font-size: 3.5rem; margin-bottom: 1.5rem; transition: 0.3s; display: block; }
+        .action-card:hover .card-icon { transform: scale(1.1); }
+        
+        h2 { font-size: 1.5rem; margin: 0 0 1rem 0; color: var(--navy-blue); font-weight: 700; }
+        p { color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem; font-size: 0.95rem; }
+
+        /* --- 5. BUILDER FORM --- */
+        #builder-view {
+            display: none; 
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid white;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .builder-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid var(--border-light);
+            padding: 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .builder-header h2 { color: var(--navy-blue); margin: 0; font-size: 1.4rem; }
+        .builder-header p { color: var(--text-muted); margin: 5px 0 0 0; font-size: 0.9rem; }
+
+        .builder-body { padding: 2rem; }
+
+        .form-section { margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 2rem; }
+        .form-section:last-child { border-bottom: none; }
+        
+        .section-title {
+            font-size: 1rem; font-weight: 700; color: var(--cherry-red);
+            margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem; }
+        .form-full { margin-bottom: 1rem; }
+
+        label { display: block; font-weight: 600; margin-bottom: 0.8rem; font-size: 0.85rem; color: var(--navy-blue); }
+        
+        .form-control {
+            width: 100%; padding: 12px;
+            background: #f8f9fa; border: 1px solid #ced4da;
+            color: var(--text-main); border-radius: 8px;
+            font-family: inherit; font-size: 0.95rem; transition: 0.3s;
+        }
+        .form-control:focus { 
+            border-color: var(--navy-blue); 
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.1); 
+        }
+        .form-control::placeholder { color: #adb5bd; }
+        textarea.form-control { resize: vertical; min-height: 120px; line-height: 1.5; }
+        .hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+
+        /* BUTTONS */
+        .btn {
+            padding: 1rem 2rem; border: none; border-radius: 30px; font-weight: 700; cursor: pointer; 
+            font-size: 0.9rem; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        
+        /* Upload Button (Navy Outline) */
+        .btn-upload { 
+            background: transparent; color: var(--navy-blue); border: 2px solid var(--navy-blue); width: 100%; 
+        }
+        .btn-upload:hover { background: var(--navy-blue); color: white; box-shadow: 0 5px 15px rgba(0, 0, 128, 0.2); }
+        .btn-upload:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; box-shadow: none; background: transparent;}
+
+        /* Builder Button (Navy Solid) */
+        .btn-builder {
+            background: var(--navy-blue); color: white; margin-top:10px; width:100%;
+        }
+        .btn-builder:hover {
+            background: #000060; box-shadow: 0 5px 15px rgba(0, 0, 128, 0.3);
+        }
+
+        /* Submit Button (Cherry Red) */
+        .btn-submit { 
+            background: var(--cherry-red); color: white; width: 100%; font-size: 1rem; font-weight: 800;
+        }
+        .btn-submit:hover { 
+            background: #a00323; box-shadow: 0 5px 15px rgba(210, 4, 45, 0.3); transform: translateY(-2px);
+        }
+        
+        .btn-secondary { 
+            background: white; color: var(--text-muted); border: 1px solid #ced4da; padding: 0.5rem 1rem; font-size: 0.8rem; 
+        }
+        .btn-secondary:hover { border-color: var(--cherry-red); color: var(--cherry-red); }
+
+        /* FILE INPUT STYLING */
+        .file-drop-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s;
+            background: #f8f9fa;
+        }
+        .file-drop-area:hover { border-color: var(--navy-blue); background: #eef2ff; }
+        .file-msg { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* STATUS MESSAGE */
+        #global-status {
+            position: fixed; top: 20px; right: 20px;
+            padding: 1rem 1.5rem; border-radius: 8px; color: white; font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: none; z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            border: none;
+        }
+        .bg-success { background: #10b981; } /* Success Green */
+        .bg-error { background: var(--cherry-red); }
+        .bg-loading { background: var(--navy-blue); }
+
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .action-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="global-status"></div>
+
+    <header>
+        <a href="welcome.html" class="brand">Talent<span>Scout</span></a>
+        <a href="welcome.html" class="nav-link">Disconnect</a>
+    </header>
+
+    <main>
+        <div id="selection-view">
+            <h1>Initialize Interface</h1>
+            <div class="subtitle">Select your data ingestion method</div>
+
+            <div class="action-grid">
+                <div class="action-card" style="border-top-color: var(--navy-blue)">
+                    <div class="card-icon" style="color: var(--navy-blue)">📂</div>
+                    <h2>Upload Dossier</h2>
+                    <p>Submit existing PDF file. System will parse and vector-index automatically.</p>
+                    
+                    <div class="file-drop-area" onclick="document.getElementById('fileInput').click()">
+                        <span class="file-msg" id="file-label">Click to browse system files</span>
+                        <input type="file" id="fileInput" accept=".pdf" style="display:none">
+                    </div>
+
+                    <button class="btn btn-upload" onclick="uploadResume()" id="uploadBtn" disabled>
+                        ⬆ Upload Data
+                    </button>
+                </div>
+
+                <div class="action-card" onclick="showBuilder()" style="border-top-color: var(--cherry-red)">
+                    <div class="card-icon" style="color: var(--cherry-red)">⚡</div>
+                    <h2>Neural Builder</h2>
+                    <p>No file? Use the <b>Neural Builder</b> to manually construct your professional matrix.</p>
+                    <button class="btn btn-builder" style="background: var(--cherry-red)">Initiate Sequence &rarr;</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="builder-view">
+            <div class="builder-header">
+                <div>
+                    <h2>Digital Identity Constructor</h2>
+                    <p>Enter data points to generate profile matrix.</p>
+                </div>
+                <button class="btn btn-secondary" onclick="hideBuilder()">✕ ABORT</button>
+            </div>
+            
+            <div class="builder-body">
+                
+                <div class="form-section">
+                    <div class="section-title">👤 Identity Core</div>
+                    <div class="form-row">
+                        <div>
+                            <label>FULL NAME</label>
+                            <input type="text" id="r_name" class="form-control" placeholder="e.g. Rahul Sharma">
+                        </div>
+                        <div>
+                            <label>TARGET PROTOCOL (JOB TITLE)</label>
+                            <input type="text" id="r_title" class="form-control" placeholder="e.g. Senior Data Analyst">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label>COMMUNICATION LINK (EMAIL)</label>
+                            <input type="text" id="r_email" class="form-control" placeholder="rahul@example.com">
+                        </div>
+                        <div>
+                            <label>FREQUENCY (PHONE - OPTIONAL)</label>
+                            <input type="text" id="r_phone" class="form-control" placeholder="+91 98765 43210">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">📝 Executive Summary</div>
+                    <div class="form-full">
+                        <label>PROFESSIONAL OVERVIEW</label>
+                        <textarea id="r_summary" class="form-control" placeholder="Brief system overview of experience, key strengths, and objectives..."></textarea>
+                        <div class="hint">Tip: Use keywords relevant to your industry.</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">💼 Operation History</div>
+                    <div class="form-full">
+                        <label>PAST ROLES & EXECUTIONS</label>
+                        <textarea id="r_exp" class="form-control" placeholder="• Senior Analyst at XYZ Corp (2020-Present): Led a team of 5...&#10;• Junior Dev at ABC Ltd (2018-2020): Developed internal tools..."></textarea>
+                        <div class="hint">Format: Role, Company, Date, and bullet points of responsibilities.</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">🎓 Modules & Training</div>
+                    <div class="form-row">
+                        <div>
+                            <label>SKILL MODULES (COMMA SEPARATED)</label>
+                            <input type="text" id="r_skills" class="form-control" placeholder="Python, SQL, Tableau, Project Management...">
+                        </div>
+                        <div>
+                            <label>EDUCATION DATABASE</label>
+                            <input type="text" id="r_edu" class="form-control" placeholder="B.Tech Computer Science, IIT Delhi (2018)">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-top: 2rem;">
+                    <button class="btn btn-submit" onclick="buildResume()" id="buildBtn">
+                        ✅ COMPILE & UPLOAD IDENTITY
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8080";
+
+        // --- VIEW TOGGLING ---
+        function showBuilder() {
+            document.getElementById('selection-view').style.display = 'none';
+            document.getElementById('builder-view').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function hideBuilder() {
+            document.getElementById('builder-view').style.display = 'none';
+            document.getElementById('selection-view').style.display = 'block';
+        }
+
+        // --- UTILS ---
+        function showToast(msg, type='success') {
+            const toast = document.getElementById('global-status');
+            toast.textContent = msg;
+            toast.className = ''; 
+            toast.classList.add(type === 'success' ? 'bg-success' : (type === 'loading' ? 'bg-loading' : 'bg-error'));
+            toast.style.display = 'block';
+        }
+
+        // --- UPLOAD LOGIC ---
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileLabel = document.getElementById('file-label');
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileLabel.textContent = `Selected: ${this.files[0].name}`;
+                fileLabel.style.color = "var(--navy-blue)";
+                fileLabel.style.fontWeight = "bold";
+                fileLabel.style.background = "#eef2ff";
+                fileLabel.style.padding = "5px 10px";
+                fileLabel.style.borderRadius = "4px";
+                uploadBtn.disabled = false;
+            }
+        });
+
+        async function uploadResume() {
+            console.log("🚀 Starting Upload...");
+            if (fileInput.files.length === 0) return;
+
+            showToast("INITIATING UPLOAD PROTOCOL...", "loading");
+            uploadBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append("files", fileInput.files[0]);
+
+            try {
+                const response = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
+                
+                if (!response.ok) {
+                    console.error("❌ Server rejected upload");
+                    throw new Error("Upload failed");
+                }
+                
+                console.log("✅ Upload Success! Preparing Redirect...");
+                showToast("✅ UPLOAD COMPLETE! REDIRECTING...", "success");
+                
+                // --- THE REDIRECT ---
+                setTimeout(() => {
+                    console.log("➡ Jumping to thankyou.html");
+                    window.location.href = "thankyou.html"; 
+                }, 2000); 
+
+            } catch (error) {
+                console.error("❌ Error:", error);
+                showToast("❌ UPLOAD FAILED. CHECK CONNECTION.", "error");
+                uploadBtn.disabled = false;
+            }
+        }
+
+        // --- BUILDER LOGIC ---
+        async function buildResume() {
+            console.log("🚀 Starting Builder Submission...");
+            const btn = document.getElementById('buildBtn');
+            const phone = document.getElementById('r_phone').value;
+            
+            const data = {
+                full_name: document.getElementById('r_name').value,
+                job_title: document.getElementById('r_title').value,
+                email: document.getElementById('r_email').value + (phone ? ` | ${phone}` : ""),
+                skills: document.getElementById('r_skills').value,
+                summary: document.getElementById('r_summary').value,
+                experience: document.getElementById('r_exp').value,
+                education: document.getElementById('r_edu').value
+            };
+
+            if (!data.full_name || !data.job_title || !data.email) {
+                showToast("IDENTITY CORE DATA MISSING.", "error");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ COMPILING MATRIX...';
+            showToast("GENERATING DIGITAL PROFILE...", "loading");
+
+            try {
+                const response = await fetch(`${API_BASE}/create-resume`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    console.error("❌ Server rejected builder data");
+                    throw new Error("Generation failed");
+                }
+                
+                console.log("✅ Builder Success! Preparing Redirect...");
+                showToast(`✅ PROFILE INDEXED! REDIRECTING...`, "success");
+                btn.innerHTML = '✅ DONE';
+                
+                // --- THE REDIRECT ---
+                setTimeout(() => {
+                    console.log("➡ Jumping to thankyou.html");
+                    window.location.href = "thankyou.html";
+                }, 2000);
+
+            } catch (error) {
+                console.error("❌ Error:", error);
+                showToast("❌ SYSTEM ERROR. RETRY.", "error");
+                btn.disabled = false;
+                btn.innerHTML = '✅ COMPILE & UPLOAD IDENTITY';
+            }
+        }
+    </script>
+</body>
+</html>
